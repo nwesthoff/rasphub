@@ -94,7 +94,7 @@ class Player extends Component {
             <div>
               <img className="player_art" alt=""/>
             </div>
-            {this.state.player.is_playing ?
+            {this.state.player.item ?
               <div>
                   <PlayerStatus status={this.state.player.is_playing}/>
                   <PlayerTitle title={this.state.player.item.name}/>
