@@ -36,7 +36,11 @@ class PlayerArtists extends Component {
 class Button extends Component {
   render(){
     return (
-      <button onClick={() => window.location='http://localhost:8888/login'}>Log in to Spotify</button>
+      <button onClick={() => {
+            window.location = window.location.href.includes('localhost')
+              ? 'http://localhost:8888/login'
+              : 'https://rasphub-backend.herokuapp.com/login' }
+          } >Log in to Spotify</button>
     )
   }
 }
