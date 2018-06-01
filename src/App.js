@@ -73,7 +73,7 @@ class Player extends Component {
 
     this.fetchUser()
     this.fetchPlayer()
-    this.timerID = setInterval(() => this.fetchPlayer(), 1000)
+    this.timerID = setInterval(() => this.fetchPlayer(), 2000)
   }
 
   componentWillUnmount() {
