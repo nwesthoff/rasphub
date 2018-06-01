@@ -112,14 +112,16 @@ class Player extends Component {
       <section className="player">
         { this.state.user.name ?
           <div>
-            <div>
-              <img className="player_art" alt=""/>
-            </div>
             {this.state.player.item ?
+              <div>
+              <div>
+                <img src={this.state.player.item.album.images[0].url} className="player_art" alt=""/>
+              </div>
               <div>
                 <PlayerStatus status={this.state.player.is_playing}/>
                 <PlayerTitle title={this.state.player.item.name}/>
                 <PlayerArtists artists={this.state.player.item.artists} />
+              </div>
               </div> : <h2>Loading...</h2>
             }
           </div> : <Button />
