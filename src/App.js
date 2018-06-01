@@ -4,6 +4,7 @@ import queryString from 'query-string'
 
 
 class PlayerStatus extends Component {
+
   render(){
     let status = ""
 
@@ -16,6 +17,7 @@ class PlayerStatus extends Component {
 }
 
 class PlayerTitle extends Component {
+
   render(){
     return(
       <h2 className="player__title">{this.props.title}</h2>
@@ -24,6 +26,7 @@ class PlayerTitle extends Component {
 }
 
 class PlayerArtists extends Component {
+
   render(){
     let artists = this.props.artists.map(x => x.name).toString()
 
@@ -50,44 +53,62 @@ class Player extends Component {
     super()
     this.state = {
       user: {},
-      player: {}
+      player: {},
+      accessToken: ""
     }
+
+    this.fetchUser = this.fetchUser.bind(this)
+    this.fetchPlayer = this.fetchPlayer.bind(this)
+  }
+
+  componentWillMount() {
+    let parsed = queryString.parse(window.location.search)
+    this.setState({accessToken: parsed.access_token})
   }
 
   componentDidMount() {
-    let parsed = queryString.parse(window.location.search)
-    let accessToken = parsed.access_token
 
-    if (accessToken) {
-      fetch('https://api.spotify.com/v1/me', {
-        headers: {'Authorization': 'Bearer ' + accessToken}
-      })
-      .then(response => response.json())
-      .then(userData => this.setState({
-          user: {
-            name: userData.display_name
-          }
+    if (!this.state.accessToken)
+      return
+
+    this.fetchUser()
+    this.fetchPlayer()
+    this.timerID = setInterval(() => this.fetchPlayer(), 1000)
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  fetchUser() {
+    fetch('https://api.spotify.com/v1/me', {
+      headers: {'Authorization': 'Bearer ' + this.state.accessToken}
+    })
+    .then(response => response.json())
+    .then(userData => this.setState({
+        user: {
+          name: userData.display_name
         }
-      ))
+      }
+    ))
+  }
 
-      fetch('https://api.spotify.com/v1/me/player', {
-        headers: {'Authorization': 'Bearer ' + accessToken}
-      })
-      .then(response => response.json())
-      .then(playerData => this.setState(
-        {player: {
-          item: playerData.item,
-          is_playing: playerData.is_playing
-        }}
-      ))
-    }
+  fetchPlayer() {
+    fetch('https://api.spotify.com/v1/me/player', {
+      headers: {'Authorization': 'Bearer ' + this.state.accessToken}
+    })
+    .then(response => response.json())
+    .then(playerData => this.setState(
+      {player: {
+        item: playerData.item,
+        is_playing: playerData.is_playing
+      }}
+    ))
   }
 
   render() {
 
-
     return (
-
       <section className="player">
         { this.state.user.name ?
           <div>
@@ -96,9 +117,9 @@ class Player extends Component {
             </div>
             {this.state.player.item ?
               <div>
-                  <PlayerStatus status={this.state.player.is_playing}/>
-                  <PlayerTitle title={this.state.player.item.name}/>
-                  <PlayerArtists artists={this.state.player.item.artists} />
+                <PlayerStatus status={this.state.player.is_playing}/>
+                <PlayerTitle title={this.state.player.item.name}/>
+                <PlayerArtists artists={this.state.player.item.artists} />
               </div> : <h2>Loading...</h2>
             }
           </div> : <Button />
