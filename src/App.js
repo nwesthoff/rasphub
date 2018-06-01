@@ -119,8 +119,17 @@ class Player extends Component {
   }
 
   componentWillMount() {
-    let parsed = queryString.parse(window.location.search)
-    this.setState({accessToken: parsed.access_token})
+    let access_token = ""
+
+    if (window.localStorage.getItem('access_token')) {
+      access_token = window.localStorage.getItem('access_token')
+    } else {
+      let parsed = queryString.parse(window.location.search)
+      window.localStorage.setItem('access_token', parsed.access_token)
+      access_token = window.localStorage.getItem('access_token')
+    }
+
+    this.setState({accessToken: access_token})
   }
 
   componentDidMount() {
@@ -234,7 +243,7 @@ class Player extends Component {
 
     let playerArtStyle = {
       height: '260px',
-      boxShadow: '25px 25px 0 ' + this.state.palette.Vibrant,
+      boxShadow: '0 15px 35px rgba(0,0,0,0.15), 25px 25px 0 ' + this.state.palette.Vibrant,
       marginRight: '5rem'
     }
 
