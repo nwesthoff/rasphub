@@ -27,6 +27,11 @@
   to { transform: rotate(360deg); }
 }
 
+.player__art {
+  max-width: 100%;
+
+}
+
 .player__progress-bar {
   width: 5rem;
   margin: 0 auto;

@@ -130,7 +130,7 @@ class Player extends Component {
             {this.state.player.item ?
               <div>
               <div>
-                <img src={this.state.player.item.album.images[0].url} className="player_art" alt=""/>
+                <img src={this.state.player.item.album.images[0].url} className="player__art" alt=""/>
               </div>
               <div>
                 <PlayerStatus status={this.state.player.is_playing}/>
