@@ -16,6 +16,19 @@ class PlayerStatus extends Component {
   }
 }
 
+class PlayerProgress extends Component {
+
+  render(){
+    let progressPercentage = (this.props.progress/this.props.duration)*100
+
+    return(
+      <div className="player__progress-bar">
+        <div className="player__progress-bar__progress" style={{width: progressPercentage + '%'}}></div>
+      </div>
+    )
+  }
+}
+
 class PlayerTitle extends Component {
 
   render(){
@@ -73,7 +86,7 @@ class Player extends Component {
 
     this.fetchUser()
     this.fetchPlayer()
-    this.timerID = setInterval(() => this.fetchPlayer(), 2000)
+    this.timerID = setInterval(() => this.fetchPlayer(), 5000)
   }
 
   componentWillUnmount() {
@@ -101,9 +114,11 @@ class Player extends Component {
     .then(playerData => this.setState(
       {player: {
         item: playerData.item,
-        is_playing: playerData.is_playing
+        is_playing: playerData.is_playing,
+        progress_ms: playerData.progress_ms
       }}
     ))
+
   }
 
   render() {
@@ -119,6 +134,7 @@ class Player extends Component {
               </div>
               <div>
                 <PlayerStatus status={this.state.player.is_playing}/>
+                <PlayerProgress progress={this.state.player.progress_ms} duration={this.state.player.item.duration_ms} />
                 <PlayerTitle title={this.state.player.item.name}/>
                 <PlayerArtists artists={this.state.player.item.artists} />
               </div>
