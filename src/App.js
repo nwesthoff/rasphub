@@ -7,20 +7,38 @@ import * as Vibrant from 'node-vibrant'
 class PlayerStatus extends Component {
 
   render(){
-    let status = "",
+    let statusText = "",
+        playerStatusStyle = {
+          display: 'flex',
+          flexFlow: 'row wrap',
+          alignItems: 'center'
+        },
         statusStyle = {
           width: '400px',
           fontSize: '20px',
-          marginBottom: ".2rem",
+          margin: "-.3rem .8rem .1rem",
           textTransform: 'uppercase',
           fontWeight: 900,
           letterSpacing: '1px'
+        },
+        playBlockStyle = {
+          color: 'white',
+          height: '25px',
+          width: '25px',
+          padding: '3px',
+          background: this.props.color
         }
 
-    this.props.status ? status = "Now Playing" : status = "Played Last"
+    this.props.status ? statusText = "Now Playing" : statusText = "Played Last"
 
     return(
-      <h2 className="player__status" style={statusStyle} >{status}</h2>
+      <div style={playerStatusStyle}>
+        <div style={playBlockStyle}><i className="fas fa-play" /></div>
+        <div>
+          <h2 style={statusStyle} >{statusText}</h2>
+          <PlayerProgress progress={this.props.progress} color={this.props.color} duration={this.props.duration}/>
+        </div>
+      </div>
     )
   }
 }
@@ -40,6 +58,7 @@ class PlayerProgress extends Component {
 
     let progressStyle = {
       width: '5rem',
+      margin: '0 .8rem',
       background: 'rgba(0,0,0,0.5)'
     }
 
@@ -258,9 +277,12 @@ class Player extends Component {
                   <img id="playerArt" src={this.state.player.item.album.images[0].url} style={playerArtStyle} alt=""/>
                 </div>
                 <div>
-                  <PlayerStatus status={this.state.player.is_playing}/>
-                  <PlayerProgress progress={this.state.player.progress_ms} color={this.state.palette.Vibrant} duration={this.state.player.item.duration_ms} />
-                  <PlayerTitle title={this.state.player.item.name}/>
+                  <PlayerStatus
+                    status={this.state.player.is_playing}
+                    color={this.state.palette.Vibrant}
+                    progress={this.state.player.progress_ms}
+                    duration={this.state.player.item.duration_ms} />
+                  <PlayerTitle title={this.state.player.item.name} />
                   <PlayerArtists artists={this.state.player.item.artists} />
                 </div>
               </section> : <h2>Loading...</h2>

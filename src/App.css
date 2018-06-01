@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,700,800');
 
+* {
+  box-sizing: border-box;
+}
+
 .App {
   width: 900px;
   height: 1600px;
