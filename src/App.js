@@ -104,20 +104,49 @@ class Player extends Component {
         }
       }
     ))
+    .catch(error => console.log(error))
   }
 
-  fetchPlayer() {
-    fetch('https://api.spotify.com/v1/me/player', {
+  fetchLastPlayed(){
+    fetch('https://api.spotify.com/v1/me/player/recently-played?limit=1', {
       headers: {'Authorization': 'Bearer ' + this.state.accessToken}
     })
     .then(response => response.json())
-    .then(playerData => this.setState(
+    .then(lastPlayedData => this.setState(
       {player: {
-        item: playerData.item,
-        is_playing: playerData.is_playing,
-        progress_ms: playerData.progress_ms
+        item: lastPlayedData.items[0].track,
+        is_playing: false,
+        progress_ms: lastPlayedData.progress_ms
       }}
     ))
+  }
+
+  fetchPlayer() {
+    function parseJson(response){
+      return response.text().then(function(text) {
+        return text ? JSON.parse(text) : {}
+      })
+    }
+
+    fetch('https://api.spotify.com/v1/me/player', {
+      headers: {'Authorization': 'Bearer ' + this.state.accessToken}
+    })
+    .then(response => parseJson(response))
+    .then(playerData => {
+        if (Object.keys(playerData).length !== 0) {
+          this.setState(
+            {player: {
+              item: playerData.item,
+              is_playing: playerData.is_playing,
+              progress_ms: playerData.progress_ms
+            }}
+          )
+        } else {
+          this.fetchLastPlayed()
+        }
+      }
+    )
+    .catch(error => console.log(error))
 
   }
 
