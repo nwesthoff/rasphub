@@ -1,6 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,700,800');
+
 .App {
   width: 900px;
   height: 1600px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
 }
 
 .App-logo {
@@ -21,6 +25,15 @@
 
 .App-intro {
   font-size: large;
+}
+
+.button {
+  padding: 1.2rem 2.4rem;
+  margin: .6rem 1.2rem;
+  background-color: orange;
+  color: white;
+  border-radius: 5rem;
+  border: none;
 }
 
 @keyframes App-logo-spin {

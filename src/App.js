@@ -7,12 +7,20 @@ import * as Vibrant from 'node-vibrant'
 class PlayerStatus extends Component {
 
   render(){
-    let status = ""
+    let status = "",
+        statusStyle = {
+          width: '400px',
+          fontSize: '20px',
+          marginBottom: ".2rem",
+          textTransform: 'uppercase',
+          fontWeight: 900,
+          letterSpacing: '1px'
+        }
 
     this.props.status ? status = "Now Playing" : status = "Played Last"
 
     return(
-      <h2 className="player__status">{status}</h2>
+      <h2 className="player__status" style={statusStyle} >{status}</h2>
     )
   }
 }
@@ -23,7 +31,7 @@ class PlayerProgress extends Component {
     let progressPercentage = (this.props.progress/this.props.duration)*100
 
     let progressBarStyle = {
-      width: '5rem',
+      width: progressPercentage + "%",
       height: '3px',
       background: this.props.color,
 
@@ -31,13 +39,13 @@ class PlayerProgress extends Component {
     }
 
     let progressStyle = {
-      width: progressPercentage,
-      background: 'rgba(255,255,255,0.5)'
+      width: '5rem',
+      background: 'rgba(0,0,0,0.5)'
     }
 
     return(
-      <div style={progressBarStyle}>
-        <div style={progressStyle}></div>
+      <div style={progressStyle}>
+        <div style={progressBarStyle}></div>
       </div>
     )
   }
@@ -46,8 +54,16 @@ class PlayerProgress extends Component {
 class PlayerTitle extends Component {
 
   render(){
+    let titleStyle = {
+      width: '400px',
+      fontSize: '28px',
+      margin: "1.2rem 0 .2rem",
+      fontWeight: 700,
+      letterSpacing: '1px'
+    }
+
     return(
-      <h2 className="player__title">{this.props.title}</h2>
+      <h2 className="player__title" style={titleStyle} >{this.props.title}</h2>
     )
   }
 }
@@ -55,10 +71,17 @@ class PlayerTitle extends Component {
 class PlayerArtists extends Component {
 
   render(){
-    let artists = this.props.artists.map(x => x.name).toString()
+    let artists = this.props.artists.map(x => x.name).join(', '),
+        artistsStyle = {
+          width: '400px',
+          fontSize: '24px',
+          margin: ".4rem 0 .2rem",
+          fontWeight: 400,
+          letterSpacing: '1px'
+        }
 
     return(
-      <h2 className="player__artists">{artists}</h2>
+      <h2 className="player__artists" style={artistsStyle}>{artists}</h2>
     )
   }
 }
@@ -66,7 +89,7 @@ class PlayerArtists extends Component {
 class Button extends Component {
   render(){
     return (
-      <button onClick={() => {
+      <button className="button" onClick={() => {
             window.location = window.location.href.includes('localhost')
               ? 'http://localhost:8888/login'
               : 'https://rasphub-backend.herokuapp.com/login' }
@@ -83,11 +106,11 @@ class Player extends Component {
       player: {},
       accessToken: "",
       palette: {
-        Vibrant: 'Red',
-        Muted: 'Orange',
-        DarkVibrant: 'Black',
-        DarkMuted: 'Black',
-        LightMuted: 'DarkGray',
+        Vibrant: 'orange',
+        Muted: 'orange',
+        DarkVibrant: 'orange',
+        DarkMuted: 'orange',
+        LightMuted: 'orange',
       }
     }
 
@@ -185,11 +208,11 @@ class Player extends Component {
     Vibrant.from(document.querySelector("#playerArt").src).getPalette()
       .then(palette => this.setState(
         {palette: {
-          Vibrant: palette.Vibrant.getHex(),
-          Muted: palette.Muted.getHex(),
-          DarkVibrant: palette.DarkVibrant.getHex(),
-          DarkMuted: palette.DarkMuted.getHex(),
-          LightMuted: palette.LightMuted.getHex(),
+          Vibrant:  palette.Vibrant ? palette.Vibrant.getHex() : 'red',
+          Muted: palette.Muted ? palette.Muted.getHex() : 'red',
+          DarkVibrant: palette.DarkVibrant ? palette.DarkVibrant.getHex() : 'red',
+          DarkMuted: palette.DarkMuted ? palette.DarkMuted.getHex() : 'red',
+          LightMuted: palette.LightMuted ? palette.LightMuted.getHex() : 'red',
         }}
       ))
 
@@ -206,7 +229,7 @@ class Player extends Component {
       flexFlow: 'row nowrap',
       justifyContent: 'center',
       alignItems: 'center',
-      background: 'linear-gradient(to right, ' +this.state.palette.DarkVibrant+ ' 40%, ' +DarkVibrantRgba+ ' 40%)'
+      background: 'linear-gradient(to right, ' +this.state.palette.DarkVibrant+ ' 30%, ' +DarkVibrantRgba+ ' 30%)'
     }
 
     let playerArtStyle = {
