@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import queryString from 'query-string'
+import * as Vibrant from 'node-vibrant'
 
 
 class PlayerStatus extends Component {
@@ -21,9 +22,22 @@ class PlayerProgress extends Component {
   render(){
     let progressPercentage = (this.props.progress/this.props.duration)*100
 
+    let progressBarStyle = {
+      width: '5rem',
+      height: '3px',
+      background: this.props.color,
+
+      transition: 'width 400ms linear'
+    }
+
+    let progressStyle = {
+      width: progressPercentage,
+      background: 'rgba(255,255,255,0.5)'
+    }
+
     return(
-      <div className="player__progress-bar">
-        <div className="player__progress-bar__progress" style={{width: progressPercentage + '%'}}></div>
+      <div style={progressBarStyle}>
+        <div style={progressStyle}></div>
       </div>
     )
   }
@@ -67,7 +81,14 @@ class Player extends Component {
     this.state = {
       user: {},
       player: {},
-      accessToken: ""
+      accessToken: "",
+      palette: {
+        Vibrant: 'Red',
+        Muted: 'Orange',
+        DarkVibrant: 'Black',
+        DarkMuted: 'Black',
+        LightMuted: 'DarkGray',
+      }
     }
 
     this.fetchUser = this.fetchUser.bind(this)
@@ -131,7 +152,7 @@ class Player extends Component {
     fetch('https://api.spotify.com/v1/me/player', {
       headers: {'Authorization': 'Bearer ' + this.state.accessToken}
     })
-    .then(response => parseJson(response))
+    .then(parseJson)
     .then(playerData => {
         if (Object.keys(playerData).length !== 0) {
           this.setState(
@@ -141,37 +162,80 @@ class Player extends Component {
               progress_ms: playerData.progress_ms
             }}
           )
+          this.setVibrant()
         } else {
           this.fetchLastPlayed()
         }
       }
     )
     .catch(error => console.log(error))
+  }
 
+  hexToRgba(hex, opacity) {
+    hex = hex.replace('#','');
+    let r = parseInt(hex.substring(0,2), 16);
+    let g = parseInt(hex.substring(2,4), 16);
+    let b = parseInt(hex.substring(4,6), 16);
+
+    let result = 'rgba('+r+','+g+','+b+','+opacity/100+')';
+    return result;
+  }
+
+  setVibrant() {
+    Vibrant.from(document.querySelector("#playerArt").src).getPalette()
+      .then(palette => this.setState(
+        {palette: {
+          Vibrant: palette.Vibrant.getHex(),
+          Muted: palette.Muted.getHex(),
+          DarkVibrant: palette.DarkVibrant.getHex(),
+          DarkMuted: palette.DarkMuted.getHex(),
+          LightMuted: palette.LightMuted.getHex(),
+        }}
+      ))
+
+    console.log(this.state.palette)
   }
 
   render() {
+    let DarkVibrantRgba = this.hexToRgba(this.state.palette.DarkVibrant, 3)
+
+    let playerStyle = {
+      height: '533px',
+      width: '100%',
+      display: 'flex',
+      flexFlow: 'row nowrap',
+      justifyContent: 'center',
+      alignItems: 'center',
+      background: 'linear-gradient(to right, ' +this.state.palette.DarkVibrant+ ' 40%, ' +DarkVibrantRgba+ ' 40%)'
+    }
+
+    let playerArtStyle = {
+      height: '260px',
+      boxShadow: '25px 25px 0 ' + this.state.palette.Vibrant,
+      marginRight: '5rem'
+    }
 
     return (
-      <section className="player">
+
+      <div>
         { this.state.user.name ?
           <div>
             {this.state.player.item ?
-              <div>
-              <div>
-                <img src={this.state.player.item.album.images[0].url} className="player__art" alt=""/>
-              </div>
-              <div>
-                <PlayerStatus status={this.state.player.is_playing}/>
-                <PlayerProgress progress={this.state.player.progress_ms} duration={this.state.player.item.duration_ms} />
-                <PlayerTitle title={this.state.player.item.name}/>
-                <PlayerArtists artists={this.state.player.item.artists} />
-              </div>
-              </div> : <h2>Loading...</h2>
+              <section className="player" style={playerStyle}>
+                <div>
+                  <img id="playerArt" src={this.state.player.item.album.images[0].url} style={playerArtStyle} alt=""/>
+                </div>
+                <div>
+                  <PlayerStatus status={this.state.player.is_playing}/>
+                  <PlayerProgress progress={this.state.player.progress_ms} color={this.state.palette.Vibrant} duration={this.state.player.item.duration_ms} />
+                  <PlayerTitle title={this.state.player.item.name}/>
+                  <PlayerArtists artists={this.state.player.item.artists} />
+                </div>
+              </section> : <h2>Loading...</h2>
             }
           </div> : <Button />
         }
-      </section>
+      </div>
     )
   }
 }

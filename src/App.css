@@ -1,5 +1,6 @@
 .App {
-  text-align: center;
+  width: 900px;
+  height: 1600px;
 }
 
 .App-logo {
@@ -25,23 +26,4 @@
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}
-
-.player__art {
-  max-width: 100%;
-
-}
-
-.player__progress-bar {
-  width: 5rem;
-  margin: 0 auto;
-  background: rgba(0,0,0,0.5);
-}
-
-.player__progress-bar__progress {
-  width: 5rem;
-  height: 3px;
-  background: orange;
-
-  transition: width 400ms linear;
 }
