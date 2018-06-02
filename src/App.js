@@ -135,24 +135,22 @@ class Player extends Component {
 
     this.fetchUser = this.fetchUser.bind(this)
     this.fetchPlayer = this.fetchPlayer.bind(this)
+    // this.handleErrors = this.handleErrors.bind(this)
+    this.parseJson = this.parseJson.bind(this)
   }
 
   componentWillMount() {
-    let access_token = ""
+    let parsed = queryString.parse(window.location.search),
+        access_token = window.localStorage.getItem('access_token') || parsed.access_token
 
-    if (window.localStorage.getItem('access_token')) {
-      access_token = window.localStorage.getItem('access_token')
-    } else {
-      let parsed = queryString.parse(window.location.search)
-      window.localStorage.setItem('access_token', parsed.access_token)
-      access_token = window.localStorage.getItem('access_token')
-    }
+    localStorage.setItem('access_token', access_token)
 
-    this.setState({accessToken: access_token})
+    this.setState({
+      accessToken: access_token
+    })
   }
 
   componentDidMount() {
-
     if (!this.state.accessToken)
       return
 
@@ -165,23 +163,44 @@ class Player extends Component {
     clearInterval(this.timerID);
   }
 
+  handleErrors(response) {
+    if (!response.ok) {
+      localStorage.clear()
+      throw Error(response.statusText)
+    }
+    return response;
+  }
+
+  parseJson(response){
+    return response.text().then(function(text) {
+      return text ? JSON.parse(text) : {}
+    })
+  }
+
   fetchUser() {
     fetch('https://api.spotify.com/v1/me', {
       headers: {'Authorization': 'Bearer ' + this.state.accessToken}
     })
-    .then(response => response.json())
+    .then(response => {
+      this.handleErrors(response)
+      return response.clone()
+    })
+    .then(responseBlob => responseBlob.json())
     .then(userData => this.setState({
-        user: {
-          name: userData.display_name
-        }
+      user: {
+        name: userData.display_name
       }
-    ))
+    }))
     .catch(error => console.log(error))
   }
 
   fetchLastPlayed(){
     fetch('https://api.spotify.com/v1/me/player/recently-played?limit=1', {
       headers: {'Authorization': 'Bearer ' + this.state.accessToken}
+    })
+    .then(response => {
+      this.handleErrors(response)
+      return response.clone()
     })
     .then(response => response.json())
     .then(lastPlayedData => this.setState(
@@ -191,19 +210,18 @@ class Player extends Component {
         progress_ms: lastPlayedData.progress_ms
       }}
     ))
+    .catch(error => console.log(error))
   }
 
   fetchPlayer() {
-    function parseJson(response){
-      return response.text().then(function(text) {
-        return text ? JSON.parse(text) : {}
-      })
-    }
-
     fetch('https://api.spotify.com/v1/me/player', {
       headers: {'Authorization': 'Bearer ' + this.state.accessToken}
     })
-    .then(parseJson)
+    .then(response => {
+      this.handleErrors(response)
+      return response.clone()
+    })
+    .then(this.parseJson)
     .then(playerData => {
         if (Object.keys(playerData).length !== 0) {
           this.setState(
