@@ -141,9 +141,13 @@ class Player extends Component {
 
   componentWillMount() {
     let parsed = queryString.parse(window.location.search),
-        access_token = window.localStorage.getItem('access_token') || parsed.access_token
+        access_token = window.localStorage.getItem('access_token')
 
-    localStorage.setItem('access_token', access_token)
+    if ('access_token' in parsed) {
+      localStorage.setItem('access_token', parsed.access_token)
+      access_token = parsed.access_token
+    }
+
 
     this.setState({
       accessToken: access_token
