@@ -14,7 +14,7 @@ class PlayerStatus extends Component {
           alignItems: 'center'
         },
         statusStyle = {
-          width: '400px',
+          width: '275px',
           fontSize: '20px',
           margin: "-.3rem .8rem .1rem",
           textTransform: 'uppercase',
@@ -74,7 +74,7 @@ class PlayerTitle extends Component {
 
   render(){
     let titleStyle = {
-      width: '400px',
+      width: '275px',
       fontSize: '28px',
       margin: "1.2rem 0 .2rem",
       fontWeight: 700,
@@ -92,7 +92,7 @@ class PlayerArtists extends Component {
   render(){
     let artists = this.props.artists.map(x => x.name).join(', '),
         artistsStyle = {
-          width: '400px',
+          width: '275px',
           fontSize: '24px',
           margin: ".4rem 0 .2rem",
           fontWeight: 400,
@@ -135,7 +135,6 @@ class Player extends Component {
 
     this.fetchUser = this.fetchUser.bind(this)
     this.fetchPlayer = this.fetchPlayer.bind(this)
-    // this.handleErrors = this.handleErrors.bind(this)
     this.parseJson = this.parseJson.bind(this)
   }
 
@@ -258,44 +257,48 @@ class Player extends Component {
     Vibrant.from(document.querySelector("#playerArt").src).getPalette()
       .then(palette => this.setState(
         {palette: {
-          Vibrant:  palette.Vibrant ? palette.Vibrant.getHex() : 'red',
-          Muted: palette.Muted ? palette.Muted.getHex() : 'red',
-          DarkVibrant: palette.DarkVibrant ? palette.DarkVibrant.getHex() : 'red',
-          DarkMuted: palette.DarkMuted ? palette.DarkMuted.getHex() : 'red',
-          LightMuted: palette.LightMuted ? palette.LightMuted.getHex() : 'red',
+          Vibrant:  palette.Vibrant ? palette.Vibrant.getHex() : '#1ed760',
+          Muted: palette.Muted ? palette.Muted.getHex() : '#191414',
+          DarkVibrant: palette.DarkVibrant ? palette.DarkVibrant.getHex() : '#1db954',
+          DarkMuted: palette.DarkMuted ? palette.DarkMuted.getHex() : '#1e3264',
+          LightMuted: palette.LightMuted ? palette.LightMuted.getHex() : '#509bf5',
         }}
       ))
 
-    console.log(this.state.palette)
+    // console.log(this.state.palette)
   }
 
   render() {
-    let DarkVibrantRgba = this.hexToRgba(this.state.palette.DarkVibrant, 3)
-
-    let playerStyle = {
-      height: '533px',
-      width: '100%',
-      display: 'flex',
-      flexFlow: 'row nowrap',
-      justifyContent: 'center',
-      alignItems: 'center',
-      background: 'linear-gradient(to right, ' +this.state.palette.DarkVibrant+ ' 30%, ' +DarkVibrantRgba+ ' 30%)'
-    }
-
-    let playerArtStyle = {
-      height: '260px',
-      boxShadow: '0 15px 35px rgba(0,0,0,0.15), 25px 25px 0 ' + this.state.palette.Vibrant,
-      marginRight: '5rem'
-    }
+    let DarkVibrantRgba = this.hexToRgba(this.state.palette.DarkVibrant, 3),
+        spotifyPlayerStyle = {
+          height: '420px',
+          position: 'relative'
+        },
+        playerStyle = {
+          height: '100%',
+          width: '650px',
+          display: 'flex',
+          flexFlow: 'row nowrap',
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: DarkVibrantRgba
+        },
+        playerArtStyle = {
+          height: '200px',
+          boxShadow: '0 15px 35px rgba(0,0,0,0.15), 25px 25px 0 ' + this.state.palette.Vibrant,
+          marginRight: '3rem',
+          transition: 'all 400ms ease-in-out'
+        }
 
     return (
 
-      <div>
+      <div className="spotifyPlayer" style={spotifyPlayerStyle}>
         { this.state.user.name ?
-          <div>
+          <div style={{height: '100%', width: '100%'}}>
             {this.state.player.item ?
               <section className="player" style={playerStyle}>
                 <div>
+                  <div style={{height: '100%', width: '220px', backgroundColor: this.state.palette.DarkVibrant, position: 'absolute', top: '0px', left: '0px', zIndex: -1, transition: 'all 400ms ease-in-out'}}></div>
                   <img id="playerArt" src={this.state.player.item.album.images[0].url} style={playerArtStyle} alt=""/>
                 </div>
                 <div>
@@ -316,11 +319,27 @@ class Player extends Component {
   }
 }
 
+class Weather extends Component {
+  render() {
+    let weatherStyle = {
+      'height': '500px',
+      'backgroundColor': '#0f0f0f'
+    }
+
+    return(
+      <section className="weather" style={weatherStyle}>
+
+      </section>
+    )
+  }
+}
+
 class App extends Component {
   render() {
     return (
       <div className="App">
         <Player />
+        <Weather />
       </div>
     );
   }
