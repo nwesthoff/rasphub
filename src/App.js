@@ -105,6 +105,23 @@ class PlayerArtists extends Component {
   }
 }
 
+class Playlists extends Component {
+
+  render() {
+    let playlistsStyle = {
+      width: '250px',
+      height: '100%',
+      background: this.props.color,
+      transition: 'all 250ms ease-in-out'
+    }
+    return (
+      <div style={playlistsStyle}>
+        <h2 style={{fontSize: '16px', margin: '25px 25px 15px', textTransform: 'uppercase'}}><i className="fab fa-spotify"></i> New Tracks</h2>
+      </div>
+    )
+  }
+}
+
 class Button extends Component {
   render(){
     return (
@@ -269,10 +286,13 @@ class Player extends Component {
   }
 
   render() {
-    let DarkVibrantRgba = this.hexToRgba(this.state.palette.DarkVibrant, 3),
+    let BackgroundLight = this.hexToRgba(this.state.palette.DarkMuted, 3),
+        BackgroundMedium = this.hexToRgba(this.state.palette.DarkMuted, 15),
         spotifyPlayerStyle = {
           height: '420px',
-          position: 'relative'
+          position: 'relative',
+          display: 'flex',
+          flexFlow: 'row nowrap'
         },
         playerStyle = {
           height: '100%',
@@ -281,7 +301,7 @@ class Player extends Component {
           flexFlow: 'row nowrap',
           justifyContent: 'center',
           alignItems: 'center',
-          background: DarkVibrantRgba
+          background: BackgroundLight
         },
         playerArtStyle = {
           height: '200px',
@@ -292,13 +312,13 @@ class Player extends Component {
 
     return (
 
-      <div className="spotifyPlayer" style={spotifyPlayerStyle}>
+      <div >
         { this.state.user.name ?
-          <div style={{height: '100%', width: '100%'}}>
+          <section className="spotifyPlayer" style={spotifyPlayerStyle}>
             {this.state.player.item ?
-              <section className="player" style={playerStyle}>
+              <div className="player" style={playerStyle}>
                 <div>
-                  <div style={{height: '100%', width: '220px', backgroundColor: this.state.palette.DarkVibrant, position: 'absolute', top: '0px', left: '0px', zIndex: -1, transition: 'all 400ms ease-in-out'}}></div>
+                  <div style={{height: '100%', width: '220px', backgroundColor: this.state.palette.DarkMuted, position: 'absolute', top: '0px', left: '0px', zIndex: -1, transition: 'all 400ms ease-in-out'}}></div>
                   <img id="playerArt" src={this.state.player.item.album.images[0].url} style={playerArtStyle} alt=""/>
                 </div>
                 <div>
@@ -310,9 +330,14 @@ class Player extends Component {
                   <PlayerTitle title={this.state.player.item.name} />
                   <PlayerArtists artists={this.state.player.item.artists} />
                 </div>
-              </section> : <h2>Loading...</h2>
+              </div> : <h2>Loading...</h2>
             }
-          </div> : <Button />
+            {this.state.user.name ?
+                <Playlists
+                  className="playlists"
+                  color={BackgroundMedium}/> : <h2>Loading...</h2>
+            }
+          </section> : <Button />
         }
       </div>
     )
