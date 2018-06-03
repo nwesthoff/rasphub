@@ -3,6 +3,11 @@ import './App.css';
 import queryString from 'query-string'
 import * as Vibrant from 'node-vibrant'
 
+function formatDate(date) {
+  let result = ""
+  result = (date) ? new Date(date).toDateString() : ""
+  return result
+}
 
 class PlayerStatus extends Component {
 
@@ -347,7 +352,7 @@ class Player extends Component {
 class Weather extends Component {
   render() {
     let weatherStyle = {
-      'height': '500px',
+      'height': '420px',
       'backgroundColor': '#0f0f0f'
     }
 
@@ -359,12 +364,91 @@ class Weather extends Component {
   }
 }
 
+class MovieCalendar extends Component {
+  constructor() {
+    super()
+    this.state = {
+      movie: {},
+    }
+  }
+
+  componentDidMount() {
+    this.fetchMovieCalendar()
+    this.timerID = setInterval(() => this.fetchMovieCalendar(), 120000)
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  handleErrors(response) {
+    if (!response.ok) {
+      throw Error(response.statusText)
+    }
+    return response;
+  }
+
+  fetchMovieCalendar() {
+    let fetchUri = (window.location.href.includes('localhost'))
+      ? 'http://localhost:8888/moviecalendar'
+      : 'https://rasphub-backend.herokuapp.com/moviecalendar'
+
+    fetch(fetchUri)
+    .then(response => {
+      this.handleErrors(response)
+      return response.clone()
+    })
+    .then(responseBlob => responseBlob.json())
+    .then(movieData => {
+      let movieArray = movieData.map(movie => {
+        let movieObj = {}
+        movieObj["title"] = movie.title
+        movieObj["poster"] = "http://radarr.gladosplex.nl" + movie.images[0].url
+        movieObj["id"] = movie.tmdbId
+        movieObj["releaseDate"] = movie.physicalRelease
+        return movieObj
+      })
+
+      this.setState({
+        movies: movieArray
+      })
+    })
+    .catch(error => console.log(error))
+  }
+
+  render() {
+    let movieCalendarStyle = {
+      height: '300px',
+      width: '100%',
+      background: 'rgba(240, 173, 78, .02)'
+    }
+
+    return(
+      <section className="moviecalendar" style={movieCalendarStyle}>
+        <h2 style={{fontSize: '16px', margin: '25px 25px 15px', textTransform: 'uppercase'}}><i className="fas fa-film"></i> Upcoming Movies</h2>
+        {this.state.movies ?
+          <div style={{display: 'flex', flexFlow: 'row nowrap', justifyContent: 'space-between', margin: '5px 25px', overflow: 'hidden'}}>
+            {this.state.movies.map(movie => (
+              <div className="movie" key={movie.id} style={{maxWidth: '120px'}}>
+                <img src={movie.poster} style={{width: '100%', height: 'auto'}}  alt={movie.title + '-poster'}/>
+                <h5>{movie.title}</h5>
+                <h6 style={{fontWeight: '400'}}>{formatDate(movie.releaseDate)}</h6>
+              </div>
+            ))}
+          </div> : <h2>Loading...</h2>
+        }
+      </section>
+    )
+  }
+}
+
 class App extends Component {
   render() {
     return (
       <div className="App">
         <Player />
         <Weather />
+        <MovieCalendar />
       </div>
     );
   }
