@@ -429,7 +429,7 @@ class MovieCalendar extends Component {
 
     return(
       <section className="moviecalendar" style={movieCalendarStyle}>
-        <h2 style={{fontSize: '16px', margin: '0 25px 15px', textTransform: 'uppercase'}}><i className="fas fa-film"></i> Upcoming Episode</h2>
+        <h2 style={{fontSize: '16px', margin: '0 25px 15px', textTransform: 'uppercase'}}><i className="fas fa-film"></i> Upcoming Movies</h2>
         {this.state.movies ?
           <div style={{display: 'flex', flexFlow: 'row nowrap', justifyContent: 'space-between', margin: '5px 25px', overflow: 'hidden'}}>
             {this.state.movies.map(movie => (
@@ -490,7 +490,7 @@ class SeriesCalendar extends Component {
         seriesObj["title"] = series.series.title
         seriesObj["poster"] = series.series.images[2].url
         seriesObj["id"] = series.series.tvdbId
-        seriesObj["releaseDate"] = series.series.physicalRelease
+        seriesObj["releaseDate"] = series.airDate
         return seriesObj
       })
 
