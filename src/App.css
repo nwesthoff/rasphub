@@ -9,6 +9,7 @@
   height: 1440px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 400;
+  overflow: hidden;
 }
 
 .App-logo {

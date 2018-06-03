@@ -400,7 +400,10 @@ class MovieCalendar extends Component {
     })
     .then(responseBlob => responseBlob.json())
     .then(movieData => {
+      movieData = movieData.slice(0, 7)
+
       let movieArray = movieData.map(movie => {
+
         let movieObj = {}
         movieObj["title"] = movie.title
         movieObj["poster"] = "http://radarr.gladosplex.nl" + movie.images[0].url
@@ -418,21 +421,104 @@ class MovieCalendar extends Component {
 
   render() {
     let movieCalendarStyle = {
+      padding: '15px 0',
       height: '300px',
       width: '100%',
-      background: 'rgba(240, 173, 78, .02)'
+      background: 'rgba(240, 173, 78, .04)'
     }
 
     return(
       <section className="moviecalendar" style={movieCalendarStyle}>
-        <h2 style={{fontSize: '16px', margin: '25px 25px 15px', textTransform: 'uppercase'}}><i className="fas fa-film"></i> Upcoming Movies</h2>
+        <h2 style={{fontSize: '16px', margin: '0 25px 15px', textTransform: 'uppercase'}}><i className="fas fa-film"></i> Upcoming Episode</h2>
         {this.state.movies ?
           <div style={{display: 'flex', flexFlow: 'row nowrap', justifyContent: 'space-between', margin: '5px 25px', overflow: 'hidden'}}>
             {this.state.movies.map(movie => (
-              <div className="movie" key={movie.id} style={{maxWidth: '120px'}}>
-                <img src={movie.poster} style={{width: '100%', height: 'auto'}}  alt={movie.title + '-poster'}/>
-                <h5>{movie.title}</h5>
-                <h6 style={{fontWeight: '400'}}>{formatDate(movie.releaseDate)}</h6>
+              <div className="movie" key={movie.id} style={{maxWidth: '110px'}}>
+                <img src={movie.poster} style={{width: '100%', height: 'auto'}}  alt={movie.title + ' poster'}/>
+                <h5 style={{margin: '8px 0 4px'}}>{movie.title}</h5>
+                <h6 style={{fontWeight: '400', margin: '4px 0'}}>{formatDate(movie.releaseDate)}</h6>
+              </div>
+            ))}
+          </div> : <h2>Loading...</h2>
+        }
+      </section>
+    )
+  }
+}
+
+class SeriesCalendar extends Component {
+  constructor() {
+    super()
+    this.state = {
+      series: {},
+    }
+  }
+
+  componentDidMount() {
+    this.fetchMovieCalendar()
+    this.timerID = setInterval(() => this.fetchMovieCalendar(), 120000)
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  handleErrors(response) {
+    if (!response.ok) {
+      throw Error(response.statusText)
+    }
+    return response;
+  }
+
+  fetchMovieCalendar() {
+    let fetchUri = (window.location.href.includes('localhost'))
+      ? 'http://localhost:8888/seriescalendar'
+      : 'https://rasphub-backend.herokuapp.com/seriescalendar'
+
+    fetch(fetchUri)
+    .then(response => {
+      this.handleErrors(response)
+      return response.clone()
+    })
+    .then(responseBlob => responseBlob.json())
+    .then(seriesData => {
+      seriesData = seriesData.slice(0, 7)
+
+      let seriesArray = seriesData.map(series => {
+
+        let seriesObj = {}
+        seriesObj["title"] = series.series.title
+        seriesObj["poster"] = series.series.images[2].url
+        seriesObj["id"] = series.series.tvdbId
+        seriesObj["releaseDate"] = series.series.physicalRelease
+        return seriesObj
+      })
+
+      this.setState({
+        seriess: seriesArray
+      })
+    })
+    .catch(error => console.log(error))
+  }
+
+  render() {
+    let seriesCalendarStyle = {
+      padding: '20px 0',
+      height: '300px',
+      width: '100%',
+      background: 'rgba(53, 197, 244, .04)'
+    }
+
+    return(
+      <section className="seriescalendar" style={seriesCalendarStyle}>
+        <h2 style={{fontSize: '16px', margin: '0 25px 15px', textTransform: 'uppercase'}}><i className="fas fa-tv"></i> Upcoming Episodes</h2>
+        {this.state.seriess ?
+          <div style={{display: 'flex', flexFlow: 'row nowrap', justifyContent: 'space-between', margin: '5px 25px', overflow: 'hidden'}}>
+            {this.state.seriess.map(series => (
+              <div className="series" key={series.id} style={{maxWidth: '110px'}}>
+                <img src={series.poster} style={{width: '100%', height: 'auto'}}  alt={series.title + ' poster'}/>
+                <h5 style={{margin: '8px 0 4px'}}>{series.title}</h5>
+                <h6 style={{fontWeight: '400', margin: '4px 0'}}>{formatDate(series.releaseDate)}</h6>
               </div>
             ))}
           </div> : <h2>Loading...</h2>
@@ -449,6 +535,7 @@ class App extends Component {
         <Player />
         <Weather />
         <MovieCalendar />
+        <SeriesCalendar />
       </div>
     );
   }
