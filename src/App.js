@@ -228,13 +228,17 @@ class Player extends Component {
       return response.clone()
     })
     .then(response => response.json())
-    .then(lastPlayedData => this.setState(
-      {player: {
-        item: lastPlayedData.items[0].track,
-        is_playing: false,
-        progress_ms: lastPlayedData.progress_ms
-      }}
-    ))
+    .then(lastPlayedData => {
+      if (lastPlayedData.progress_ms !== this.state.player.progress_ms) {
+        this.setState(
+          {player: {
+            item: lastPlayedData.items[0].track,
+            is_playing: false,
+            progress_ms: lastPlayedData.progress_ms
+          }}
+        )
+      }
+    })
     .catch(error => console.log(error))
   }
 
@@ -249,13 +253,15 @@ class Player extends Component {
     .then(this.parseJson)
     .then(playerData => {
         if (Object.keys(playerData).length !== 0) {
-          this.setState(
-            {player: {
-              item: playerData.item,
-              is_playing: playerData.is_playing,
-              progress_ms: playerData.progress_ms
-            }}
-          )
+          if (playerData.progress_ms !== this.state.player.progress_ms) {
+            this.setState(
+              {player: {
+                item: playerData.item,
+                is_playing: playerData.is_playing,
+                progress_ms: playerData.progress_ms
+              }}
+            )
+          }
           this.setVibrant()
         } else {
           this.fetchLastPlayed()
