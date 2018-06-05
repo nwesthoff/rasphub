@@ -406,13 +406,12 @@ class MovieCalendar extends Component {
     })
     .then(responseBlob => responseBlob.json())
     .then(movieData => {
-      movieData = movieData.slice(0, 7)
+      console.log(movieData)
 
       let movieArray = movieData.map(movie => {
-
         let movieObj = {}
         movieObj["title"] = movie.title
-        movieObj["poster"] = "http://radarr.gladosplex.nl" + movie.images[0].url
+        movieObj["poster"] = movie.tmdbPoster
         movieObj["id"] = movie.tmdbId
         movieObj["releaseDate"] = movie.physicalRelease
         return movieObj
